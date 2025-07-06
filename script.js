@@ -59,10 +59,10 @@ function moveButterfly(index) {
 // Add a flag to prevent movement after game over
 let isGameOver = false;
 
-function showGameOverScreen() {
+function showGameOverScreen(customMessage) {
   // Create the Game Over box
   const msg = document.createElement('div');
-  msg.textContent = 'Game Over';
+  msg.textContent = customMessage || 'Game Over';
   msg.style.position = 'fixed';
   msg.style.top = '50%';
   msg.style.left = '50%';
@@ -76,6 +76,22 @@ function showGameOverScreen() {
   msg.style.boxShadow = '0 8px 32px #0005';
   msg.style.textAlign = 'center';
   msg.style.fontFamily = 'Fredoka One, Comic Sans MS, Comic Sans, cursive, sans-serif';
+
+  // If the player completed the level, show extra info and points
+  if (customMessage === 'You Saved Water! Level Complete') {
+    // Create a new div for the extra message
+    const extra = document.createElement('div');
+    extra.textContent = '💧 In the minute it took you to complete this level, 5 liters of water could have been wasted if the tap was left running. A drop saved today is a life secured for the future. You\'ve earned 5000 points!';
+    extra.style.fontSize = '1.3rem';
+    extra.style.color = '#b3e5fc';
+    extra.style.marginTop = '28px';
+    extra.style.marginBottom = '8px';
+    extra.style.lineHeight = '1.5';
+    extra.style.fontFamily = 'inherit';
+    // Add the extra message below the main message
+    msg.appendChild(document.createElement('br'));
+    msg.appendChild(extra);
+  }
 
   // Create the Restart button
   const restartBtn = document.createElement('button');
@@ -119,6 +135,7 @@ function showGameOverScreen() {
     lives = 3;
     gameOver = false;
     invincible = false;
+    isGameOver = false; // Allow movement again
     // Remove all raindrops
     document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
     // Hide game, show title
@@ -135,13 +152,66 @@ function handleKeyDown(e) {
   // Only move if the game is visible
   if (gameContainer.style.display === 'none' || isGameOver) return;
   if (e.repeat) return; // Ignore held-down keys
+
+  // --- Check for level completion on tap ---
+  // If the butterfly is on the tap and the user presses W or ArrowUp
+  if (
+    tapActive &&
+    butterflyIndex === flowerCenters.length - 1 &&
+    (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp')
+  ) {
+    // End the game and show the level complete message
+    isGameOver = true;
+    showGameOverScreen('You Saved Water! Level Complete');
+    return;
+  }
+
   // Move left
   if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
     moveButterfly(butterflyIndex - 1);
   }
   // Move right
   if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
-    moveButterfly(butterflyIndex + 1);
+    if (butterflyIndex === flowerCenters.length - 1) {
+      if (!tapActive && wraparounds === WRAPAROUNDS_TO_WIN - 1) {
+        // On the third wrap, replace rightmost flower with tap2.png
+        tapActive = true;
+        const rightFlower = flowerGroups[flowerGroups.length - 1];
+        rightFlower.innerHTML = '';
+        const tapImg = document.createElement('img');
+        tapImg.src = 'img/tap2.png';
+        tapImg.alt = 'Water Tap';
+        tapImg.style.width = '150px'; // Bigger tap
+        tapImg.style.height = 'auto';
+        tapImg.style.display = 'block';
+        tapImg.style.margin = '0 auto';
+        tapImg.style.position = 'absolute';
+        tapImg.style.right = '-60px'; // Stick out more from right side
+        tapImg.style.top = '-190px'; // Raise tap up to butterfly eye level
+        tapImg.style.zIndex = '10';
+        rightFlower.style.position = 'relative';
+        rightFlower.appendChild(tapImg);
+      }
+      // If at rightmost flower, loop to leftmost (unless tap is active)
+      if (!tapActive) {
+        // Make butterfly invincible during teleport
+        invincible = true;
+        moveButterfly(0);
+        wraparounds++;
+        progress++;
+        updateProgressBar();
+        // Remove invincibility after short delay
+        setTimeout(() => {
+          invincible = false;
+        }, 400);
+      }
+    } else {
+      moveButterfly(butterflyIndex + 1);
+      progress++;
+      updateProgressBar();
+      // --- REMOVE: auto level complete on tap ---
+      // If tap is active and butterfly moves to tap, do nothing (wait for W key)
+    }
   }
 }
 
@@ -390,6 +460,61 @@ function startGame() {
   // Recalculate flower positions and move butterfly
   calculateFlowerCenters();
   moveButterfly(butterflyIndex);
+  // Reset progress bar and wraparounds
+  progress = 0;
+  wraparounds = 0;
+  updateProgressBar();
+  tapActive = false;
+  // Restore rightmost flower image
+  const rightFlower = flowerGroups[flowerGroups.length - 1];
+  rightFlower.innerHTML = '<img src="img/flowers.png" class="flower-img" alt="Flower">';
+}
+
+// Add progress bar HTML just below Level 1 label in the HUD
+const hudCenter = document.querySelector('.hud-center');
+if (!document.getElementById('level-progress')) {
+  const progressDiv = document.createElement('div');
+  progressDiv.id = 'level-progress';
+  const barDiv = document.createElement('div');
+  barDiv.id = 'progress-bar';
+  progressDiv.appendChild(barDiv);
+  // Insert after level-bar
+  const levelBar = document.querySelector('.level-bar');
+  levelBar.insertAdjacentElement('afterend', progressDiv);
+}
+
+// Progress bar logic
+let progress = 0;
+const WRAPAROUNDS_TO_WIN = 3;
+const totalProgress = WRAPAROUNDS_TO_WIN * flowerGroups.length;
+function updateProgressBar() {
+  const percent = Math.min(100, (progress / totalProgress) * 100);
+  document.getElementById('progress-bar').style.width = percent + '%';
+}
+
+// Track wraparounds
+let wraparounds = 0;
+
+// Reset progress bar and wraparounds on game start
+function startGame() {
+  // Hide the title screen (header)
+  titleScreen.style.display = 'none';
+  // Show the game layout
+  gameContainer.style.display = 'block';
+  // Set butterfly to leftmost flower
+  butterflyIndex = 0; // Always start at the first (leftmost) flower
+  moveButterfly(butterflyIndex);
+  // Recalculate flower positions and move butterfly
+  calculateFlowerCenters();
+  moveButterfly(butterflyIndex);
+  // Reset progress bar and wraparounds
+  progress = 0;
+  wraparounds = 0;
+  updateProgressBar();
+  tapActive = false;
+  // Restore rightmost flower image
+  const rightFlower = flowerGroups[flowerGroups.length - 1];
+  rightFlower.innerHTML = '<img src="img/flowers.png" class="flower-img" alt="Flower">';
 }
 
 // Start raindrops when the game starts

@@ -79,23 +79,6 @@
       min-width: 180px;
       text-align: center;
     }
-    .progress-indicator {
-      width: 200px;
-      height: 12px;
-      background: #bbdefb;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 2px solid #1976d2;
-      margin: 0 auto;
-      position: relative;
-    }
-    .progress-fill {
-      height: 100%;
-      background: #1976d2;
-      width: 40%;
-      border-radius: 6px 0 0 6px;
-      transition: width 0.3s;
-    }
     .clouds-row {
       display: flex;
       justify-content: space-evenly;
@@ -276,7 +259,8 @@
             It’s raining in the backyard, but the water tap is still on! As the brave butterfly, your quest is to cross the garden, dodge the downpour, and turn off the tap to help save water for the flowers. Every drop counts—show the world you’re a true water hero!<br><br>
             <span style="font-size:1.15em; font-weight:bold;">🎮 Controls</span><br>
             <strong>Move Left:</strong> A or Left Arrow<br>
-            <strong>Move Right:</strong> D or Right Arrow<br><br>
+            <strong>Move Right:</strong> D or Right Arrow<br>
+            <strong>Turn off Tap:</strong> W or Up Arrow<br><br>
             <span style="font-size:1.15em; font-weight:bold;">🦋 How to Play</span><br>
             <strong>Leap Across the Flowers:</strong> The butterfly can only land on the flowers—never on the grass or in mid-air!<br>
             <strong>Dodge the Raindrops:</strong> Raindrops fall from the clouds above. Time your jumps to avoid getting soaked!<br>
@@ -312,9 +296,7 @@
           </div>
           <div class="hud-center">
             <div class="level-bar">Level 1</div>
-            <div class="progress-indicator">
-              <div class="progress-fill"></div>
-            </div>
+            <!-- Removed the unused progress-indicator and progress-fill -->
           </div>
           <div class="hud-right"></div>
         </div>
