@@ -234,6 +234,69 @@
     #start-btn:active {
       transform: translateY(1px);
     }
+    /* --- Touch Controls Styles --- */
+    .touch-controls {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      flex-direction: row;
+      gap: 16px;
+    }
+    .touch-btn {
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .touch-btn:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
+    }
+    .touch-btn:active {
+      transform: translateY(1px);
+    }
+    /* --- Accessibility Styles --- */
+    [role="region"] {
+      border: 2px dashed #1976d2;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    [role="progressbar"] {
+      background: #e3f2fd;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 24px;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    #progress-bar {
+      background: #4fc3f7;
+      height: 100%;
+      width: 0;
+      transition: width 0.3s;
+    }
+    /* --- Hide touch controls on desktop --- */
+    @media (min-width: 801px) {
+      .touch-controls {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -285,9 +348,9 @@
     <div id="game-container">
       <div id="game-ui">
         <!-- HUD Row: Hearts left, Level center -->
-        <div class="hud-row">
+        <div class="hud-row" role="region" aria-label="Game HUD">
           <div class="hud-left">
-            <div class="lives">
+            <div class="lives" aria-label="Lives left">
               <!-- SVG blue hearts for lives -->
               <svg viewBox="0 0 32 32"><path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/></svg>
               <svg viewBox="0 0 32 32"><path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/></svg>
@@ -295,8 +358,10 @@
             </div>
           </div>
           <div class="hud-center">
-            <div class="level-bar">Level 1</div>
-            <!-- Removed the unused progress-indicator and progress-fill -->
+            <div class="level-bar" aria-label="Level">Level 1</div>
+            <div id="level-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+              <div id="progress-bar"></div>
+            </div>
           </div>
           <div class="hud-right"></div>
         </div>
@@ -338,6 +403,12 @@
         <!-- Grass floor at the very bottom -->
         <div class="grass-floor">
           <img src="img/grass.png" class="grass-img" alt="Grass Floor">
+        </div>
+        <!-- On-screen touch controls for mobile -->
+        <div class="touch-controls" id="touch-controls" aria-label="Touch Controls">
+          <button class="touch-btn" id="btn-left" aria-label="Move Left" tabindex="0">&#8592; Left</button>
+          <button class="touch-btn" id="btn-jump" aria-label="Jump" tabindex="0">&#8593; Jump</button>
+          <button class="touch-btn" id="btn-right" aria-label="Move Right" tabindex="0">Right &#8594;</button>
         </div>
       </div>
     </div>

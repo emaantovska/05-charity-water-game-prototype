@@ -490,6 +490,11 @@ const totalProgress = WRAPAROUNDS_TO_WIN * flowerGroups.length;
 function updateProgressBar() {
   const percent = Math.min(100, (progress / totalProgress) * 100);
   document.getElementById('progress-bar').style.width = percent + '%';
+  // Update ARIA value
+  const progressDiv = document.getElementById('level-progress');
+  if (progressDiv) {
+    progressDiv.setAttribute('aria-valuenow', Math.round(percent));
+  }
 }
 
 // Track wraparounds
@@ -532,3 +537,25 @@ startBtn.addEventListener('click', () => {
   // Start the game
   startGame();
 });
+
+// --- Touch Controls for Mobile ---
+// Get touch control buttons
+const btnLeft = document.getElementById('btn-left');
+const btnRight = document.getElementById('btn-right');
+const btnJump = document.getElementById('btn-jump');
+
+function triggerKey(key) {
+  // Create a fake KeyboardEvent for compatibility
+  const event = new KeyboardEvent('keydown', { key });
+  window.dispatchEvent(event);
+}
+
+if (btnLeft && btnRight && btnJump) {
+  btnLeft.addEventListener('touchstart', e => { e.preventDefault(); triggerKey('a'); });
+  btnRight.addEventListener('touchstart', e => { e.preventDefault(); triggerKey('d'); });
+  btnJump.addEventListener('touchstart', e => { e.preventDefault(); triggerKey('w'); });
+  // Also allow click for accessibility
+  btnLeft.addEventListener('click', () => triggerKey('a'));
+  btnRight.addEventListener('click', () => triggerKey('d'));
+  btnJump.addEventListener('click', () => triggerKey('w'));
+}
