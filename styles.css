@@ -1,15 +1,68 @@
-/* Charity: water Brand Colors
+/* Set the body background to clouds.jpg and center everything */
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: url('img/clouds.jpg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', 'Courier New', Courier, monospace;
+}
 
-Primary Colors:
-- Yellow:     #FFC907
-- Blue:       #2E9DF7
+header {
+  background: rgba(0, 60, 180, 0.7); /* blue overlay */
+  color: #fff;
+  padding: 32px 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  margin-bottom: 32px;
+  border: 3px solid #b3e6ff; /* light blue border for water/nature */
+}
 
-Secondary Colors:
-- Light Blue: #8BD1CB
-- Green:      #4FCB53
-- Orange:     #FF902A
-- Red:        #F5402C
-- Dark Green: #159A48
-- Pink:       #F16061
+h1 {
+  font-size: 3rem;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+  text-shadow: none;
+  border: 4px solid #b3e6ff;
+  display: inline-block;
+  padding: 12px 32px;
+  border-radius: 12px;
+  background: rgba(0,60,180,0.8);
+}
 
-*/
+p {
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+}
+
+#start-btn {
+  font-family: inherit;
+  font-size: 1.2rem;
+  background: linear-gradient(90deg, #b3e6ff 0%, #4fc3f7 100%); /* blue gradient */
+  color: #034d21; /* deep green for nature */
+  border: 3px solid #034d21;
+  border-radius: 10px;
+  padding: 14px 36px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  transition: background 0.2s, transform 0.2s;
+  margin-top: 12px;
+}
+
+#start-btn:hover {
+  background: linear-gradient(90deg, #4fc3f7 0%, #b3e6ff 100%);
+  color: #00796b;
+  transform: scale(1.05);
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
