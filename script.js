@@ -91,6 +91,11 @@ function showGameOverScreen(customMessage) {
     // Add the extra message below the main message
     msg.appendChild(document.createElement('br'));
     msg.appendChild(extra);
+
+    // Trigger confetti celebration
+    if (jsConfetti) {
+      jsConfetti.addConfetti();
+    }
   }
 
   // Create the Restart button
@@ -559,3 +564,47 @@ if (btnLeft && btnRight && btnJump) {
   btnRight.addEventListener('click', () => triggerKey('d'));
   btnJump.addEventListener('click', () => triggerKey('w'));
 }
+
+// --- Reset Button Logic ---
+const resetBtn = document.getElementById('reset-btn');
+if (resetBtn) {
+  resetBtn.addEventListener('click', () => {
+    // Hide game, show title
+    gameContainer.style.display = 'none';
+    titleScreen.style.display = 'block';
+    // Reset hearts (add back SVGs if missing)
+    const livesDiv = document.querySelector('.lives');
+    while (livesDiv.children.length < 3) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 32 32');
+      svg.innerHTML = '<path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/>';
+      livesDiv.appendChild(svg);
+    }
+    // Reset lives and butterfly position
+    lives = 3;
+    gameOver = false;
+    invincible = false;
+    isGameOver = false;
+    // Remove all raindrops
+    document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
+    // Reset progress bar and wraparounds
+    progress = 0;
+    wraparounds = 0;
+    updateProgressBar();
+    tapActive = false;
+    // Restore rightmost flower image
+    const rightFlower = flowerGroups[flowerGroups.length - 1];
+    rightFlower.innerHTML = '<img src="img/flowers.png" class="flower-img" alt="Flower">';
+    // Move butterfly to leftmost flower
+    butterflyIndex = 0;
+    moveButterfly(butterflyIndex);
+  });
+}
+
+// --- Confetti celebration (js-confetti) ---
+let jsConfetti;
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.JSConfetti) {
+    jsConfetti = new JSConfetti();
+  }
+});
