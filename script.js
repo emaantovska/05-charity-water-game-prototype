@@ -59,7 +59,22 @@ function moveButterfly(index) {
 // Add a flag to prevent movement after game over
 let isGameOver = false;
 
+// Track the current level
+let currentLevel = 1;
+
+// Helper to update the level label in the HUD
+function updateLevelLabel() {
+  // Always update after DOM changes
+  setTimeout(() => {
+    const levelBar = document.querySelector('.level-bar');
+    if (levelBar) {
+      levelBar.textContent = `Level ${currentLevel}`;
+    }
+  }, 0);
+}
+
 function showGameOverScreen(customMessage) {
+  stopTimer();
   // Create the Game Over box
   const msg = document.createElement('div');
   msg.textContent = customMessage || 'Game Over';
@@ -98,9 +113,13 @@ function showGameOverScreen(customMessage) {
     }
   }
 
-  // Create the Restart button
+  // Create the Restart/Next Level button
   const restartBtn = document.createElement('button');
-  restartBtn.textContent = 'Restart?';
+  if (customMessage === 'You Saved Water! Level Complete') {
+    restartBtn.textContent = 'Next Level';
+  } else {
+    restartBtn.textContent = 'Restart?';
+  }
   restartBtn.style.marginTop = '32px';
   restartBtn.style.fontSize = '1.5rem';
   restartBtn.style.background = '#fff';
@@ -125,10 +144,9 @@ function showGameOverScreen(customMessage) {
     restartBtn.style.color = '#0a2472';
   };
 
-  // When Restart is clicked, go back to the title screen and reset game state
+  // When button is clicked, handle next level or restart
   restartBtn.onclick = () => {
     msg.remove();
-    // Reset hearts (add back SVGs if missing)
     const livesDiv = document.querySelector('.lives');
     while (livesDiv.children.length < 3) {
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -136,16 +154,52 @@ function showGameOverScreen(customMessage) {
       svg.innerHTML = '<path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/>';
       livesDiv.appendChild(svg);
     }
-    // Reset lives and butterfly position
-    lives = 3;
-    gameOver = false;
-    invincible = false;
-    isGameOver = false; // Allow movement again
     // Remove all raindrops
     document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
-    // Hide game, show title
-    gameContainer.style.display = 'none';
-    titleScreen.style.display = 'block';
+    // If Next Level, increment level and start game again
+    if (customMessage === 'You Saved Water! Level Complete') {
+      currentLevel++;
+      // Update the level label after DOM is ready
+      updateLevelLabel();
+      // Reset lives and butterfly position
+      lives = 3;
+      gameOver = false;
+      invincible = false;
+      isGameOver = false;
+      // Start the game again (skip title screen)
+      gameContainer.style.display = 'block';
+      titleScreen.style.display = 'none';
+      // Reset progress bar, wraparounds, and everything else
+      butterflyIndex = 0;
+      calculateFlowerCenters();
+      moveButterfly(butterflyIndex);
+      progress = 0;
+      wraparounds = 0;
+      updateProgressBar();
+      tapActive = false;
+      // Restore rightmost flower image
+      const rightFlower = flowerGroups[flowerGroups.length - 1];
+      rightFlower.innerHTML = '<img src="img/flowers.png" class="flower-img" alt="Flower">';
+      // Reset hearts visuals
+      const heartSvgs = livesDiv.querySelectorAll('svg');
+      heartSvgs.forEach(svg => svg.classList.remove('heart-lost'));
+      // Reset and start timer
+      resetTimer();
+      startTimer();
+      // Start raindrops
+      startRaindrops();
+    } else {
+      currentLevel = 1;
+      updateLevelLabel();
+      // Reset lives and butterfly position
+      lives = 3;
+      gameOver = false;
+      invincible = false;
+      isGameOver = false;
+      // Hide game, show title
+      gameContainer.style.display = 'none';
+      titleScreen.style.display = 'block';
+    }
   };
 
   msg.appendChild(restartBtn);
@@ -194,8 +248,16 @@ function handleKeyDown(e) {
         tapImg.style.right = '-60px'; // Stick out more from right side
         tapImg.style.top = '-190px'; // Raise tap up to butterfly eye level
         tapImg.style.zIndex = '10';
+        tapImg.style.opacity = '0'; // Start invisible
+        tapImg.style.transform = 'translateY(40px) scale(0.7)'; // Start lower and smaller
+        tapImg.style.transition = 'opacity 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.25s cubic-bezier(0.4,0,0.2,1)';
         rightFlower.style.position = 'relative';
         rightFlower.appendChild(tapImg);
+        // Animate in after a short delay for smoothness
+        setTimeout(() => {
+          tapImg.style.opacity = '1';
+          tapImg.style.transform = 'translateY(0) scale(1)';
+        }, 30);
       }
       // If at rightmost flower, loop to leftmost (unless tap is active)
       if (!tapActive) {
@@ -237,11 +299,24 @@ window.addEventListener('DOMContentLoaded', () => {
   moveButterfly(butterflyIndex);
 });
 
-// When Start Game is clicked, show the game and recalculate positions
+// When Start Game is clicked, always reset to Level 1
 startBtn.addEventListener('click', () => {
+  currentLevel = 1;
+  updateLevelLabel();
   titleScreen.style.display = 'none';
   gameContainer.style.display = 'block';
   // Recalculate flower positions and move butterfly
+  calculateFlowerCenters();
+  moveButterfly(butterflyIndex);
+});
+
+// Also update the label on DOMContentLoaded in case of reload
+window.addEventListener('DOMContentLoaded', () => {
+  updateLevelLabel();
+  // Show only the title screen at first
+  titleScreen.style.display = 'block';
+  gameContainer.style.display = 'none';
+  // Calculate flower positions and set butterfly
   calculateFlowerCenters();
   moveButterfly(butterflyIndex);
 });
@@ -348,23 +423,29 @@ function createRaindrop(cloudIndex) {
 function loseLife() {
   if (lives > 0) {
     lives--;
-    // Animate the rightmost heart fading out, then remove it
-    if (livesSvgs[lives]) {
-      const heart = livesSvgs[lives];
-      heart.classList.add('heart-fade');
+    // Animate the rightmost heart fading out, then remove it after animation
+    const livesDiv = document.querySelector('.lives');
+    const heartSvgs = livesDiv.querySelectorAll('svg');
+    if (heartSvgs[lives]) {
+      // Add the heart-lost class for smooth animation
+      heartSvgs[lives].classList.add('heart-lost');
+      // Remove the SVG after the animation ends (0.5s)
       setTimeout(() => {
-        if (heart.parentNode) heart.parentNode.removeChild(heart);
-        livesSvgs.pop();
-      }, 400); // Match CSS animation duration
+        if (heartSvgs[lives] && heartSvgs[lives].parentNode) {
+          heartSvgs[lives].parentNode.removeChild(heartSvgs[lives]);
+        }
+      }, 500);
     }
+    // If no lives left, end the game
     if (lives === 0) {
-      setTimeout(endGame, 400); // Wait for last heart to fade
+      endGame();
     }
   }
 }
 
 // Show Game Over message and stop the game
 function endGame() {
+  stopTimer();
   gameOver = true;
   isGameOver = true; // Prevent movement
   // Create the Game Over box
@@ -451,6 +532,135 @@ function startRaindrops() {
     // Delay the first drop by 1.2 seconds for fairness
     setTimeout(spawn, 1200);
   });
+}
+
+// --- Timer Logic ---
+let timerInterval = null;
+let timerStart = null;
+function startTimer() {
+  timerStart = Date.now();
+  const timerDiv = document.getElementById('game-timer');
+  if (timerInterval) clearInterval(timerInterval);
+  function update() {
+    const elapsed = Math.floor((Date.now() - timerStart) / 1000);
+    const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const sec = String(elapsed % 60).padStart(2, '0');
+    if (timerDiv) timerDiv.textContent = `${min}:${sec}`;
+  }
+  update();
+  timerInterval = setInterval(update, 1000);
+}
+function stopTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+}
+function resetTimer() {
+  stopTimer();
+  const timerDiv = document.getElementById('game-timer');
+  if (timerDiv) timerDiv.textContent = '00:00';
+}
+// Start timer when game starts
+startBtn.addEventListener('click', () => {
+  resetTimer();
+  startTimer();
+});
+// Stop timer on win/game over
+function showGameOverScreen(customMessage) {
+  stopTimer();
+  // Create the Game Over box
+  const msg = document.createElement('div');
+  msg.textContent = customMessage || 'Game Over';
+  msg.style.position = 'fixed';
+  msg.style.top = '50%';
+  msg.style.left = '50%';
+  msg.style.transform = 'translate(-50%, -50%)';
+  msg.style.fontSize = '3rem';
+  msg.style.color = '#fff';
+  msg.style.background = '#0a2472'; // dark blue
+  msg.style.padding = '32px 48px 80px 48px';
+  msg.style.borderRadius = '24px';
+  msg.style.zIndex = '1000';
+  msg.style.boxShadow = '0 8px 32px #0005';
+  msg.style.textAlign = 'center';
+  msg.style.fontFamily = 'Fredoka One, Comic Sans MS, Comic Sans, cursive, sans-serif';
+
+  // If the player completed the level, show extra info and points
+  if (customMessage === 'You Saved Water! Level Complete') {
+    // Create a new div for the extra message
+    const extra = document.createElement('div');
+    extra.textContent = '💧 In the minute it took you to complete this level, 5 liters of water could have been wasted if the tap was left running. A drop saved today is a life secured for the future. You\'ve earned 5000 points!';
+    extra.style.fontSize = '1.3rem';
+    extra.style.color = '#b3e5fc';
+    extra.style.marginTop = '28px';
+    extra.style.marginBottom = '8px';
+    extra.style.lineHeight = '1.5';
+    extra.style.fontFamily = 'inherit';
+    // Add the extra message below the main message
+    msg.appendChild(document.createElement('br'));
+    msg.appendChild(extra);
+
+    // Trigger confetti celebration
+    if (jsConfetti) {
+      jsConfetti.addConfetti();
+    }
+  }
+
+  // Create the Restart/Next Level button
+  const restartBtn = document.createElement('button');
+  if (customMessage === 'You Saved Water! Level Complete') {
+    restartBtn.textContent = 'Next Level';
+  } else {
+    restartBtn.textContent = 'Restart?';
+  }
+  restartBtn.style.marginTop = '32px';
+  restartBtn.style.fontSize = '1.5rem';
+  restartBtn.style.background = '#fff';
+  restartBtn.style.color = '#0a2472';
+  restartBtn.style.border = 'none';
+  restartBtn.style.borderRadius = '12px';
+  restartBtn.style.padding = '12px 32px';
+  restartBtn.style.cursor = 'pointer';
+  restartBtn.style.fontWeight = 'bold';
+  restartBtn.style.boxShadow = '0 2px 12px #0002';
+  restartBtn.style.position = 'absolute';
+  restartBtn.style.left = '50%';
+  restartBtn.style.bottom = '24px';
+  restartBtn.style.transform = 'translateX(-50%)';
+  restartBtn.style.transition = 'background 0.2s, color 0.2s';
+  restartBtn.onmouseenter = () => {
+    restartBtn.style.background = '#1976d2';
+    restartBtn.style.color = '#fff';
+  };
+  restartBtn.onmouseleave = () => {
+    restartBtn.style.background = '#fff';
+    restartBtn.style.color = '#0a2472';
+  };
+
+  // When button is clicked, go back to the title screen and reset game state
+  restartBtn.onclick = () => {
+    msg.remove();
+    // Reset hearts (add back SVGs if missing)
+    const livesDiv = document.querySelector('.lives');
+    while (livesDiv.children.length < 3) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 32 32');
+      svg.innerHTML = '<path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/>';
+      livesDiv.appendChild(svg);
+    }
+    // Reset lives and butterfly position
+    lives = 3;
+    gameOver = false;
+    invincible = false;
+    isGameOver = false; // Allow movement again
+    // Remove all raindrops
+    document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
+    // Hide game, show title
+    gameContainer.style.display = 'none';
+    titleScreen.style.display = 'block';
+  };
+
+  msg.appendChild(restartBtn);
+  document.body.appendChild(msg);
 }
 
 // Ensure butterfly starts on the leftmost flower when the game starts
@@ -598,6 +808,8 @@ if (resetBtn) {
     // Move butterfly to leftmost flower
     butterflyIndex = 0;
     moveButterfly(butterflyIndex);
+    // Reset timer
+    resetTimer();
   });
 }
 
