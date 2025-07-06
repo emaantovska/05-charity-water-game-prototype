@@ -199,12 +199,24 @@
       text-align: center;
     }
     .title-screen-box {
-      background: rgba(65, 168, 216, 0.8);
+      background: #2b83db; /* Strong blue for high contrast */
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 4px 8px rgba(232, 227, 227, 0.2);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.18);
       backdrop-filter: blur(10px);
       margin-bottom: 32px;
+      color: #fff; /* Ensure all text inside is white for contrast */
+    }
+    .title-screen-box h2,
+    .title-screen-box strong,
+    .title-screen-box span,
+    .title-screen-box div {
+      color: #fff !important;
+      text-shadow: 0 2px 4px #0a2472;
+    }
+    .title-screen-box a {
+      color: #ffe066;
+      text-decoration: underline;
     }
     .game-title {
       margin: 0;
@@ -297,6 +309,20 @@
         display: none;
       }
     }
+    .instructions-images-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      margin: 16px 0;
+    }
+    .instructions-images-row img {
+      width: 24%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -309,38 +335,42 @@
         </div>
         <button id="start-btn" class="start-btn">Start Game</button>
       </div>
-      <div class="title-screen-box" style="margin-top: 32px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 48px; max-width: 1400px; margin-left: auto; margin-right: auto;">
+      <div class="title-screen-box instructions-section">
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;">
-          <img src="img/img1.jpg" alt="happy girl" style="width: 300px; max-width: 32vw; height: auto; border-radius: 22px; box-shadow: 0 6px 32px #1976d255; margin-bottom: 0;">
-          <img src="img/img3.png" alt="Charity: water logo" style="width: 300px; max-width: 28vw; height: auto; border-radius: 18px; box-shadow: 0 4px 18px #2196f355; margin-top: 0;">
+          <!-- Removed img1.jpg and img3.png from the left side -->
         </div>
-        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; width:100%;">
           <h2 style="color:#1976d2; font-size:2rem; margin-bottom:16px; margin-top:0; text-align:center; letter-spacing:1px; text-shadow:0 2px 0 #fff, 0 4px 12px #b3e6ff;">Instructions</h2>
-          <div style="color:#034d21; font-size:1.15rem; line-height:1.6; max-width:600px; text-align:left;">
-            <strong>Sprinkle Saver: Game Manual</strong><br><br>
-            <span style="font-size:1.3em;">🌧️ Mission Brief</span><br>
-            It’s raining in the backyard, but the water tap is still on! As the brave butterfly, your quest is to cross the garden, dodge the downpour, and turn off the tap to help save water for the flowers. Every drop counts—show the world you’re a true water hero!<br><br>
-            <span style="font-size:1.15em; font-weight:bold;">🎮 Controls</span><br>
-            <strong>Move Left:</strong> A or Left Arrow<br>
-            <strong>Move Right:</strong> D or Right Arrow<br>
-            <strong>Turn off Tap:</strong> W or Up Arrow<br><br>
-            <span style="font-size:1.15em; font-weight:bold;">🦋 How to Play</span><br>
-            <strong>Leap Across the Flowers:</strong> The butterfly can only land on the flowers—never on the grass or in mid-air!<br>
-            <strong>Dodge the Raindrops:</strong> Raindrops fall from the clouds above. Time your jumps to avoid getting soaked!<br>
-            <strong>Watch Your Lives:</strong> You start with 3 hearts. Each time a raindrop hits you, you lose a heart. Lose all hearts and it’s game over!<br>
-            <strong>Reach the Water Tap:</strong> Make it all the way across the backyard to the tap on the far right and turn it off to win the level!<br><br>
-            <span style="font-size:1.15em; font-weight:bold;">💧 Pro Tips</span><br>
-            Raindrops fall at different speeds and from different clouds—stay alert!<br>
-            Plan your jumps and don’t rush. Sometimes patience is your best friend.<br>
-            Every heart matters. Conserve them like you conserve water!<br><br>
-            <span style="font-size:1.15em; font-weight:bold;">🌍 Why It Matters</span><br>
-            This game is inspired by charity: water. By turning off the tap when it’s raining, you help save water for those who need it most. Play smart, save water, and spread the word!<br><br>
-            <strong>Ready? Flap your wings and save the day!</strong>
+          <div class="instructions-content">
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;">🌧️ Mission Brief</span><br>
+            <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">It’s raining in the backyard, but the water tap is still on! As the brave butterfly, your quest is to cross the garden, dodge the downpour, and turn off the tap to help save water for the flowers. Every drop counts—show the world you’re a true water hero!</span><br><br>
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;">Sprinkle Saver: Game Manual</span><br><br>
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;">🎮 Controls</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Move Left:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">A or Left Arrow</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Move Right:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">D or Right Arrow</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Turn off Tap:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">W or Up Arrow</span><br><br>
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;">🦋 How to Play</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Leap Across the Flowers:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">The butterfly can only land on the flowers—never on the grass or in mid-air!</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Dodge the Raindrops:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">Raindrops fall from the clouds above. Time your jumps to avoid getting soaked!</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Watch Your Lives:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">You start with 3 hearts. Each time a raindrop hits you, you lose a heart. Lose all hearts and it’s game over!</span><br>
+            <strong style="color:#fff; text-shadow:0 2px 4px #0a2472;">Reach the Water Tap:</strong> <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">Make it all the way across the backyard to the tap on the far right and turn it off to win the level!</span><br><br>
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;">💧 Pro Tips</span><br>
+            <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">Raindrops fall at different speeds and from different clouds—stay alert!</span><br>
+            <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">Plan your jumps and don’t rush. Sometimes patience is your best friend.</span><br>
+            <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">Every heart matters. Conserve them like you conserve water!</span><br><br>
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;">🌍 Why It Matters</span><br>
+            <span style="color:#fff; text-shadow:0 2px 4px #0a2472;">This game is inspired by charity: water. By turning off the tap when it’s raining, you help save water for those who need it most. Play smart, save water, and spread the word!</span><br><br>
+            <span style="font-size:1.3em; color:#fff; text-shadow:0 2px 4px #0a2472;"><strong>Ready? Flap your wings and save the day!</strong></span>
+          </div>
+          <div class="instructions-images-row">
+            <img src="img/img1.jpg" alt="Happy girl">
+            <img src="img/img3.png" alt="Charity: water logo">
+            <img src="img/img2.jpg" alt="Boy with water">
+            <img src="img/img4.png" alt="Charity: water tap">
           </div>
         </div>
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px;">
-          <img src="img/img2.jpg" alt="boy with water" style="width: 300px; max-width: 32vw; height: auto; border-radius: 22px; box-shadow: 0 6px 32px #1976d255; margin-bottom: 0;">
-          <img src="img/img4.png" alt="Charity: water tap" style="width: 300px; max-width: 28vw; height: auto; border-radius: 18px; box-shadow: 0 4px 18px #2196f355; margin-top: 0;">
+          <!-- Removed img2.jpg and img4.png from the right side -->
         </div>
       </div>
     </header>
@@ -362,10 +392,11 @@
             <div id="level-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
               <div id="progress-bar"></div>
             </div>
+            <!-- Timer is now beneath the progress bar -->
+            <div id="game-timer" class="game-timer" aria-label="Timer" tabindex="0" style="margin-top: 8px; font-size: 1.3rem; color: #1976d2; font-weight: bold; text-align: center; padding: 8px 18px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; background: #e3f2fdcc; border-radius: 12px; box-shadow: 0 2px 8px #1976d222; letter-spacing: 1px;">00:00</div>
           </div>
           <div class="hud-right">
             <button id="reset-btn" class="reset-btn" aria-label="Reset Game" tabindex="0" title="Back to Main Menu">&#8634; Reset</button>
-            <div id="game-timer" class="game-timer" aria-label="Timer" tabindex="0" style="margin-top: 8px; font-size: 1.3rem; color: #1976d2; font-weight: bold; text-align: right; padding: 8px 18px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; background: #e3f2fdcc; border-radius: 12px; box-shadow: 0 2px 8px #1976d222; letter-spacing: 1px;">00:00</div>
           </div>
         </div>
         <!-- Clouds and raindrops -->

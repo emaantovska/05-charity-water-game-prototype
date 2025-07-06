@@ -64,7 +64,6 @@ let currentLevel = 1;
 
 // Helper to update the level label in the HUD
 function updateLevelLabel() {
-  // Always update after DOM changes
   setTimeout(() => {
     const levelBar = document.querySelector('.level-bar');
     if (levelBar) {
@@ -154,22 +153,18 @@ function showGameOverScreen(customMessage) {
       svg.innerHTML = '<path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/>';
       livesDiv.appendChild(svg);
     }
-    // Remove all raindrops
     document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
-    // If Next Level, increment level and start game again
     if (customMessage === 'You Saved Water! Level Complete') {
+      // Increment level and update HUD
       currentLevel++;
-      // Update the level label after DOM is ready
       updateLevelLabel();
-      // Reset lives and butterfly position
+      // Reset all relevant game state for new level
       lives = 3;
       gameOver = false;
       invincible = false;
       isGameOver = false;
-      // Start the game again (skip title screen)
       gameContainer.style.display = 'block';
       titleScreen.style.display = 'none';
-      // Reset progress bar, wraparounds, and everything else
       butterflyIndex = 0;
       calculateFlowerCenters();
       moveButterfly(butterflyIndex);
@@ -177,31 +172,25 @@ function showGameOverScreen(customMessage) {
       wraparounds = 0;
       updateProgressBar();
       tapActive = false;
-      // Restore rightmost flower image
       const rightFlower = flowerGroups[flowerGroups.length - 1];
       rightFlower.innerHTML = '<img src="img/flowers.png" class="flower-img" alt="Flower">';
-      // Reset hearts visuals
       const heartSvgs = livesDiv.querySelectorAll('svg');
       heartSvgs.forEach(svg => svg.classList.remove('heart-lost'));
-      // Reset and start timer
       resetTimer();
       startTimer();
-      // Start raindrops
       startRaindrops();
     } else {
+      // Reset to level 1 only if restarting from main menu
       currentLevel = 1;
       updateLevelLabel();
-      // Reset lives and butterfly position
       lives = 3;
       gameOver = false;
       invincible = false;
       isGameOver = false;
-      // Hide game, show title
       gameContainer.style.display = 'none';
       titleScreen.style.display = 'block';
     }
   };
-
   msg.appendChild(restartBtn);
   document.body.appendChild(msg);
 }
@@ -779,6 +768,8 @@ if (btnLeft && btnRight && btnJump) {
 const resetBtn = document.getElementById('reset-btn');
 if (resetBtn) {
   resetBtn.addEventListener('click', () => {
+    // Only allow reset if not game over
+    if (isGameOver) return; // Prevent reset if game is over
     // Hide game, show title
     gameContainer.style.display = 'none';
     titleScreen.style.display = 'block';

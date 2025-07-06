@@ -69,8 +69,8 @@ body {
   gap: 4px; /* tighter hearts */
 }
 .lives svg {
-  width: 32px;
-  height: 32px;
+  width: 60px !important;
+  height: 60px !important;
   transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
   opacity: 1;
   transform: scale(1);
@@ -183,17 +183,17 @@ body {
 
 /* Title Screen: Center title and button */
 #title-screen {
-  min-height: 100vh;
-  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
   background: url('img/clouds.jpg') no-repeat center center fixed;
   background-size: cover;
   position: relative;
   z-index: 10;
-  padding-top: 7vh;
+  text-align: center;
 }
 .title-box {
   display: flex;
@@ -306,193 +306,110 @@ body {
 
 /* Title screen box */
 .title-screen-box {
+  background: #2b83db;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+  backdrop-filter: blur(10px);
+  margin-bottom: 32px;
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(173, 216, 255, 0.92); /* light blue, mostly opaque */
-  border-radius: 28px;
-  border: 4px solid #b3e6ff;
-  box-shadow: 0 8px 32px rgba(33,150,243,0.15);
-  padding: 40px 32px 36px 32px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 900px;
+  width: 100%;
+}
+.title-screen-box.instructions-section {
   margin-top: 0;
   margin-bottom: 0;
-  max-width: 95vw;
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 48px;
+  box-sizing: border-box;
 }
-
-/* Make all instructions text in the title screen dark blue */
-#title-screen .title-screen-box h2 {
+.instructions-content {
   color: #fff !important;
-  text-shadow: 0 3px 12px #0a3e72, 0 1px 0 #0a3e72;
+  text-shadow: 0 2px 4px #0a2472;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  max-width: 800px;
+  min-width: 400px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 24px;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
 }
-#title-screen .title-screen-box div {
-  color: #0a3e72 !important;
+.instructions-images-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+  width: 100%;
+  margin-top: 12px;
 }
-
-#level-progress {
-  width: 300px;
-  height: 18px;
-  background: #e3f2fd;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 0 auto 12px auto;
-  box-shadow: 0 2px 8px #1976d222;
-}
-#progress-bar {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, #4fc3f7 0%, #2196f3 100%);
-  transition: width 0.3s;
-}
-
-.reset-btn {
-  font-size: 1.3rem;
-  font-family: 'Fredoka One', 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
-  background: #fff;
-  color: #1976d2;
-  border: 2px solid #1976d2;
+.instructions-images-row img {
+  width: 24%;
+  height: auto;
   border-radius: 12px;
-  padding: 8px 18px;
-  margin: 8px 8px 0 0;
-  box-shadow: 0 2px 8px #1976d222;
-  cursor: pointer;
-  font-weight: bold;
-  letter-spacing: 1px;
-  min-width: 44px;
-  min-height: 44px;
-  transition: background 0.2s, color 0.2s, border 0.2s;
-  outline: 2px solid #ffd600;
-  outline-offset: 2px;
-  float: right;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
 }
-.reset-btn:focus {
-  outline: 3px solid #ffe066;
-  background: #e3f2fd;
+.instructions-images-row img[alt="Boy with water"] {
+  width: 24%;
+  min-width: 120px;
+  max-width: 300px;
+  z-index: 1;
 }
-
-.game-timer {
-  margin-top: 8px;
-  font-size: 2.4rem !important; /* Make timer much bigger */
-  color: #1976d2;
-  font-weight: bold;
-  text-align: right;
-  background: #e3f2fdcc;
-  border-radius: 8px;
-  padding: 8px 18px;
-  min-width: 80px;
-  display: inline-block;
-  letter-spacing: 1px;
-  box-shadow: 0 1px 4px #1976d222;
-}
-@media (max-width: 800px) {
-  .game-timer {
-    font-size: 2rem !important;
+@media (max-width: 1100px) {
+  .instructions-section {
+    flex-direction: column;
+    gap: 24px;
+    max-width: 98vw;
+    align-items: center;
   }
-}
-@media (max-width: 600px) {
-  .game-timer {
-    font-size: 1.4rem !important;
-  }
-}
-
-@media (max-width: 800px) {
-  .hud-row, .clouds-row, .flowers-row { max-width: 100vw; }
-  .cloud-img { width: 90px; }
-  .flower-img { width: 50px; }
-  .butterfly-img { width: 28px; }
-  .grass-img {
-    width: 140vw;
-    min-width: 140vw;
-    max-width: 120vw;
-    height: 80px;
-    object-fit: cover;
-    margin: 0;
-    padding: 0;
-    left: 0;
-    right: 0;
-    position: relative;
-    display: block;
-  }
-  .flowers-row { bottom: 30px; }
-  .grass-floor { height: 70px; }
-  .raindrop-anim {
-    width: 18px;
-    height: 18px;
-  }
-  /* Touch controls for mobile */
-  .touch-controls {
-    display: flex;
-  }
-  .flowers-row, .clouds-row, .grass-floor {
-    max-width: 100vw;
+  .instructions-content {
+    max-width: 98vw;
     min-width: 0;
-    left: 0;
-    right: 0;
-    padding: 0;
   }
-  .flower-img, .butterfly-img {
-    min-width: 44px;
-    min-height: 44px;
-    width: 12vw;
-    max-width: 70px;
+  .instructions-images-row {
+    flex-wrap: wrap;
+    gap: 10px;
   }
-  .cloud-img {
+  .instructions-images-row img {
     width: 18vw;
-    min-width: 44px;
-    max-width: 90px;
   }
-  .grass-img {
-    height: 70px;
-    min-width: 100vw;
-    max-width: 120vw;
-  }
-  .level-bar, .hud-center, .hud-left, .hud-right {
-    font-size: 1.1rem;
-  }
-  .lives svg {
-    width: 32px;
-    height: 32px;
-  }
-  .reset-btn {
-    font-size: 1.1rem;
-    padding: 8px 10px;
-    min-width: 44px;
-    min-height: 44px;
+  .instructions-images-row img[alt="Boy with water"] {
+    width: 18vw;
+    min-width: 80px;
+    max-width: 220px;
   }
 }
-@media (max-width: 600px) {
-  .title-box { padding: 16px 4vw 16px 4vw; }
-  .title-row h1 { font-size: 2rem; }
-  .title-row img { width: 40px; }
-  #start-btn { font-size: 1.1rem; padding: 12px 18px; }
-  .game-title { font-size: 2rem; padding: 8px 8px; }
-  .start-btn { font-size: 1.1rem; padding: 14px 18px; }
-  #title-screen { padding-top: 3vh; }
-  .title-screen-box { padding: 18px 2vw 18px 2vw; }
-  .level-bar, .hud-center, .hud-left, .hud-right {
-    font-size: 0.95rem;
+@media (max-width: 700px) {
+  .title-screen-box, .instructions-section {
+    max-width: 99vw;
+    padding: 8px;
   }
-  .flower-img, .butterfly-img {
-    min-width: 44px;
-    min-height: 44px;
-    width: 16vw;
-    max-width: 54px;
+  .instructions-content {
+    max-width: 98vw;
+    font-size: 1em;
   }
-  .cloud-img {
-    width: 22vw;
-    min-width: 44px;
-    max-width: 60px;
+  .instructions-images-row img {
+    width: 14vw;
   }
-  .grass-img {
-    height: 48px;
-    min-width: 100vw;
-    max-width: 120vw;
-  }
-  .touch-btn {
-    font-size: 1.1rem;
-    min-width: 54px;
-    min-height: 44px;
-    padding: 8px 10px;
+  .instructions-images-row img[alt="Boy with water"] {
+    width: 14vw;
+    min-width: 60px;
+    max-width: 140px;
   }
 }
 
@@ -524,4 +441,28 @@ body {
 button:focus, .touch-btn:focus {
   outline: 3px solid #ffd600 !important;
   outline-offset: 2px;
+}
+.reset-btn {
+  font-family: 'Fredoka One', 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
+  font-size: 1.3rem; /* smaller font size */
+  background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+  color: #1976d2;
+  border: 4px solid #fff;
+  border-radius: 32px;
+  padding: 10px 28px; /* smaller padding */
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(255,214,0,0.18);
+  margin-top: 0;
+  margin-bottom: 0;
+  transition: background 0.18s, transform 0.18s, color 0.18s, box-shadow 0.18s;
+  outline: none;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 0 #fff, 0 4px 12px #ffd60099;
+}
+.reset-btn:hover, .reset-btn:focus {
+  background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+  color: #fff;
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow: 0 12px 36px #ffd60099;
 }
