@@ -56,10 +56,84 @@ function moveButterfly(index) {
   }, 250);
 }
 
+// Add a flag to prevent movement after game over
+let isGameOver = false;
+
+function showGameOverScreen() {
+  // Create the Game Over box
+  const msg = document.createElement('div');
+  msg.textContent = 'Game Over';
+  msg.style.position = 'fixed';
+  msg.style.top = '50%';
+  msg.style.left = '50%';
+  msg.style.transform = 'translate(-50%, -50%)';
+  msg.style.fontSize = '3rem';
+  msg.style.color = '#fff';
+  msg.style.background = '#0a2472'; // dark blue
+  msg.style.padding = '32px 48px 80px 48px';
+  msg.style.borderRadius = '24px';
+  msg.style.zIndex = '1000';
+  msg.style.boxShadow = '0 8px 32px #0005';
+  msg.style.textAlign = 'center';
+  msg.style.fontFamily = 'Fredoka One, Comic Sans MS, Comic Sans, cursive, sans-serif';
+
+  // Create the Restart button
+  const restartBtn = document.createElement('button');
+  restartBtn.textContent = 'Restart?';
+  restartBtn.style.marginTop = '32px';
+  restartBtn.style.fontSize = '1.5rem';
+  restartBtn.style.background = '#fff';
+  restartBtn.style.color = '#0a2472';
+  restartBtn.style.border = 'none';
+  restartBtn.style.borderRadius = '12px';
+  restartBtn.style.padding = '12px 32px';
+  restartBtn.style.cursor = 'pointer';
+  restartBtn.style.fontWeight = 'bold';
+  restartBtn.style.boxShadow = '0 2px 12px #0002';
+  restartBtn.style.position = 'absolute';
+  restartBtn.style.left = '50%';
+  restartBtn.style.bottom = '24px';
+  restartBtn.style.transform = 'translateX(-50%)';
+  restartBtn.style.transition = 'background 0.2s, color 0.2s';
+  restartBtn.onmouseenter = () => {
+    restartBtn.style.background = '#1976d2';
+    restartBtn.style.color = '#fff';
+  };
+  restartBtn.onmouseleave = () => {
+    restartBtn.style.background = '#fff';
+    restartBtn.style.color = '#0a2472';
+  };
+
+  // When Restart is clicked, go back to the title screen and reset game state
+  restartBtn.onclick = () => {
+    msg.remove();
+    // Reset hearts (add back SVGs if missing)
+    const livesDiv = document.querySelector('.lives');
+    while (livesDiv.children.length < 3) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 32 32');
+      svg.innerHTML = '<path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/>';
+      livesDiv.appendChild(svg);
+    }
+    // Reset lives and butterfly position
+    lives = 3;
+    gameOver = false;
+    invincible = false;
+    // Remove all raindrops
+    document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
+    // Hide game, show title
+    gameContainer.style.display = 'none';
+    titleScreen.style.display = 'block';
+  };
+
+  msg.appendChild(restartBtn);
+  document.body.appendChild(msg);
+}
+
 // Listen for keydown events to move the butterfly
 function handleKeyDown(e) {
   // Only move if the game is visible
-  if (gameContainer.style.display === 'none') return;
+  if (gameContainer.style.display === 'none' || isGameOver) return;
   if (e.repeat) return; // Ignore held-down keys
   // Move left
   if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
@@ -199,13 +273,17 @@ function createRaindrop(cloudIndex) {
 function loseLife() {
   if (lives > 0) {
     lives--;
-    // Remove the rightmost heart SVG
+    // Animate the rightmost heart fading out, then remove it
     if (livesSvgs[lives]) {
-      livesSvgs[lives].parentNode.removeChild(livesSvgs[lives]);
-      livesSvgs.pop();
+      const heart = livesSvgs[lives];
+      heart.classList.add('heart-fade');
+      setTimeout(() => {
+        if (heart.parentNode) heart.parentNode.removeChild(heart);
+        livesSvgs.pop();
+      }, 400); // Match CSS animation duration
     }
     if (lives === 0) {
-      endGame();
+      setTimeout(endGame, 400); // Wait for last heart to fade
     }
   }
 }
@@ -213,7 +291,8 @@ function loseLife() {
 // Show Game Over message and stop the game
 function endGame() {
   gameOver = true;
-  // Show a simple Game Over message in the center
+  isGameOver = true; // Prevent movement
+  // Create the Game Over box
   const msg = document.createElement('div');
   msg.textContent = 'Game Over';
   msg.style.position = 'fixed';
@@ -221,12 +300,66 @@ function endGame() {
   msg.style.left = '50%';
   msg.style.transform = 'translate(-50%, -50%)';
   msg.style.fontSize = '3rem';
-  msg.style.color = '#222';
-  msg.style.background = 'rgba(255,255,255,0.95)';
-  msg.style.padding = '32px 48px';
+  msg.style.color = '#fff';
+  msg.style.background = '#0a2472'; // dark blue
+  msg.style.padding = '32px 48px 80px 48px';
   msg.style.borderRadius = '24px';
   msg.style.zIndex = '1000';
-  msg.style.boxShadow = '0 8px 32px #0002';
+  msg.style.boxShadow = '0 8px 32px #0005';
+  msg.style.textAlign = 'center';
+  msg.style.fontFamily = 'Fredoka One, Comic Sans MS, Comic Sans, cursive, sans-serif';
+
+  // Create the Restart button
+  const restartBtn = document.createElement('button');
+  restartBtn.textContent = 'Restart?';
+  restartBtn.style.marginTop = '32px';
+  restartBtn.style.fontSize = '1.5rem';
+  restartBtn.style.background = '#fff';
+  restartBtn.style.color = '#0a2472';
+  restartBtn.style.border = 'none';
+  restartBtn.style.borderRadius = '12px';
+  restartBtn.style.padding = '12px 32px';
+  restartBtn.style.cursor = 'pointer';
+  restartBtn.style.fontWeight = 'bold';
+  restartBtn.style.boxShadow = '0 2px 12px #0002';
+  restartBtn.style.position = 'absolute';
+  restartBtn.style.left = '50%';
+  restartBtn.style.bottom = '24px';
+  restartBtn.style.transform = 'translateX(-50%)';
+  restartBtn.style.transition = 'background 0.2s, color 0.2s';
+  restartBtn.onmouseenter = () => {
+    restartBtn.style.background = '#1976d2';
+    restartBtn.style.color = '#fff';
+  };
+  restartBtn.onmouseleave = () => {
+    restartBtn.style.background = '#fff';
+    restartBtn.style.color = '#0a2472';
+  };
+
+  // When Restart is clicked, go back to the title screen and reset game state
+  restartBtn.onclick = () => {
+    msg.remove();
+    // Reset hearts (add back SVGs if missing)
+    const livesDiv = document.querySelector('.lives');
+    while (livesDiv.children.length < 3) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 32 32');
+      svg.innerHTML = '<path d="M16 29s-13-8.35-13-16.5S10.5 2 16 8.5 29 2 29 12.5 16 29 16 29z" fill="#4fc3f7" stroke="#1976d2" stroke-width="2"/>';
+      livesDiv.appendChild(svg);
+    }
+    // Reset lives and butterfly position
+    lives = 3;
+    gameOver = false;
+    invincible = false;
+    isGameOver = false; // Allow movement again
+    // Remove all raindrops
+    document.querySelectorAll('.raindrop-anim').forEach(drop => drop.remove());
+    // Hide game, show title
+    gameContainer.style.display = 'none';
+    titleScreen.style.display = 'block';
+  };
+
+  msg.appendChild(restartBtn);
   document.body.appendChild(msg);
 }
 
@@ -245,9 +378,22 @@ function startRaindrops() {
   });
 }
 
+// Ensure butterfly starts on the leftmost flower when the game starts
+function startGame() {
+  // Hide the title screen (header)
+  titleScreen.style.display = 'none';
+  // Show the game layout
+  gameContainer.style.display = 'block';
+  // Set butterfly to leftmost flower
+  butterflyIndex = 0; // Always start at the first (leftmost) flower
+  moveButterfly(butterflyIndex);
+  // Recalculate flower positions and move butterfly
+  calculateFlowerCenters();
+  moveButterfly(butterflyIndex);
+}
+
 // Start raindrops when the game starts
 startBtn.addEventListener('click', () => {
-  // ...existing code...
   lives = 3;
   gameOver = false;
   invincible = true;
@@ -258,4 +404,6 @@ startBtn.addEventListener('click', () => {
   setTimeout(() => {
     invincible = false;
   }, 1200);
+  // Start the game
+  startGame();
 });
